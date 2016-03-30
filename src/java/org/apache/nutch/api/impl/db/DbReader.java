@@ -52,15 +52,20 @@ public class DbReader {
   public Iterator<Map<String, Object>> runQuery(DbFilter filter) {
     String startKey = filter.getStartKey();
     String endKey = filter.getEndKey();
+    String key = filter.getKey();
 
     if (!filter.isKeysReversed()) {
       startKey = reverseKey(filter.getStartKey());
       endKey = reverseKey(filter.getEndKey());
+      key = reverseKey(filter.getKey());
     }
 
     Query<String, WebPage> query = store.newQuery();
     query.setFields(prepareFields(filter.getFields()));
-    if (startKey != null) {
+
+    if (key != null) {
+      query.setKey(key);
+    } else if (startKey != null) {
       query.setStartKey(startKey);
       if (endKey != null) {
         query.setEndKey(endKey);
