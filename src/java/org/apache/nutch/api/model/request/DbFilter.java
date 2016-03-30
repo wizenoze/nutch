@@ -22,6 +22,7 @@ public class DbFilter {
   private String batchId;
   private String startKey;
   private String endKey;
+  private String key;
   private boolean isKeysReversed = false;
   private Set<String> fields;
 
@@ -63,5 +64,13 @@ public class DbFilter {
 
   public void setBatchId(String batchId) {
     this.batchId = batchId;
+  }
+
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
   }
 }
