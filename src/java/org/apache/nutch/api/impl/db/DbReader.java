@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.gora.query.Query;
@@ -85,7 +86,9 @@ public class DbReader {
     if (CollectionUtils.isEmpty(fields)) {
       return null;
     }
-    fields.remove("url");
-    return fields.toArray(new String[fields.size()]);
+    // copy the fields, so that we do not remove the url from the original fields
+    Set<String> fieldsCopy = Sets.newHashSet(fields);
+    fieldsCopy.remove("url");
+    return fieldsCopy.toArray(new String[fieldsCopy.size()]);
   }
 }
