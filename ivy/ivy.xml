@@ -23,6 +23,7 @@
   </info>
 
   <configurations>
+    <!-- FIXME:  Add ../ after the basedir to make it work with IntelliJ and IvyIDEA -->
     <include file="${basedir}/ivy/ivy-configurations.xml" />
   </configurations>
 
