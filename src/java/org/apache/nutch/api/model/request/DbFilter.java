@@ -23,6 +23,7 @@ public class DbFilter {
   private String startKey;
   private String endKey;
   private String key;
+  private String prefix;
   private boolean isKeysReversed = false;
   private Set<String> fields;
 
@@ -72,5 +73,13 @@ public class DbFilter {
 
   public void setKey(String key) {
     this.key = key;
+  }
+
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
   }
 }
