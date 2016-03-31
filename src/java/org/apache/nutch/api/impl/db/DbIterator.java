@@ -42,9 +42,15 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
   private WebPage page;
   private Utf8 batchId;
   private Set<String> commonFields;
+  private String prefix;
 
   DbIterator(Result<String, WebPage> res, Set<String> fields, String batchId) {
+    this(res, fields, batchId, null);
+  }
+
+  DbIterator(Result<String, WebPage> res, Set<String> fields, String batchId, String prefix) {
     this.result = res;
+    this.prefix = prefix;
     if (batchId != null) {
       this.batchId = new Utf8(batchId);
     }
@@ -74,7 +80,11 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
         return;
       }
 
-      LOG.debug("Skipping {}; different batch id", result.getKey());
+      if (prefix == null || result.getKey().startsWith(prefix)) { // check that the prefix is correct when provided
+        return;
+      }
+
+      LOG.debug("Skipping {}; different batch id or wrong prefix", result.getKey());
       hasNext = result.next();
     }
   }

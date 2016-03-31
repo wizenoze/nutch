@@ -53,18 +53,25 @@ public class DbReader {
     String startKey = filter.getStartKey();
     String endKey = filter.getEndKey();
     String key = filter.getKey();
+    String prefix = filter.getPrefix();
 
     if (!filter.isKeysReversed()) {
       startKey = reverseKey(filter.getStartKey());
       endKey = reverseKey(filter.getEndKey());
       key = reverseKey(filter.getKey());
+      prefix = reverseKey(prefix);
     }
 
     Query<String, WebPage> query = store.newQuery();
     query.setFields(prepareFields(filter.getFields()));
 
-    if (key != null) {
+    if (key != null) { // If a single key is supplied that takes precedence
       query.setKey(key);
+    } else if (prefix != null) { // then a prefix
+      query.setStartKey(prefix.substring(0, prefix.length()-1) + "!");  // "!" is the last visible character
+                                                                        // in the ASCII table
+      query.setEndKey(prefix.substring(0, prefix.length()-1) + "~");    // "~" is the last visible character
+                                                                        // in the ASCII table
     } else if (startKey != null) {
       query.setStartKey(startKey);
       if (endKey != null) {
@@ -73,7 +80,7 @@ public class DbReader {
     }
 
     Result<String, WebPage> result = store.execute(query);
-    return new DbIterator(result, filter.getFields(), filter.getBatchId());
+    return new DbIterator(result, filter.getFields(), filter.getBatchId(), prefix);
   }
 
   private String reverseKey(String key) {
