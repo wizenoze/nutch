@@ -68,7 +68,7 @@ public class DbReader {
     if (key != null) { // If a single key is supplied that takes precedence
       query.setKey(key);
     } else if (prefix != null) { // then a prefix
-      query.setStartKey(prefix.substring(0, prefix.length()-1) + "!");  // "!" is the last visible character
+      query.setStartKey(prefix.substring(0, prefix.length()-1) + "!");  // "!" is the first visible character
                                                                         // in the ASCII table
       query.setEndKey(prefix.substring(0, prefix.length()-1) + "~");    // "~" is the last visible character
                                                                         // in the ASCII table
