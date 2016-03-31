@@ -71,6 +71,7 @@ public class DbReader {
         query.setEndKey(endKey);
       }
     }
+
     Result<String, WebPage> result = store.execute(query);
     return new DbIterator(result, filter.getFields(), filter.getBatchId());
   }

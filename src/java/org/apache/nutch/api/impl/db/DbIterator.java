@@ -106,6 +106,8 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
     if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("url")) {
       result.put("url", TableUtil.unreverseUrl(url));
     }
+    // url in its original form
+    result.put("key", url);
     return result;
   }
 
