@@ -99,9 +99,14 @@ public class DbReader {
     if (CollectionUtils.isEmpty(fields)) {
       return null;
     }
-    // copy the fields, so that we do not remove the url from the original fields
+    // copy the fields, so that we do not remove the url, etc from the original
     Set<String> fieldsCopy = Sets.newHashSet(fields);
     fieldsCopy.remove("url");
+    fieldsCopy.remove("key");
+    if (fieldsCopy.contains("statusText")) { // if we want the statusText, then we should include the status
+      fieldsCopy.add("status");
+    }
+    fieldsCopy.remove("statusText");
     return fieldsCopy.toArray(new String[fieldsCopy.size()]);
   }
 }
