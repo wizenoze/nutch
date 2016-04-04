@@ -62,10 +62,6 @@ public class DbReader {
       prefix = reverseKey(prefix);
     }
 
-    if (filter.getFields().contains("statusText")) { // if we want the statusText, then we should include the status
-      filter.getFields().add("status");
-    }
-
     Query<String, WebPage> query = store.newQuery();
     query.setFields(prepareFields(filter.getFields()));
 
@@ -108,7 +104,6 @@ public class DbReader {
     // remove fields that do not exist in the datastore
     fieldsCopy.remove("url");
     fieldsCopy.remove("key");
-    fieldsCopy.remove("statusText");
     return fieldsCopy.toArray(new String[fieldsCopy.size()]);
   }
 }

@@ -119,9 +119,9 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
       result.put("url", TableUtil.unreverseUrl(url));
     }
 
-    // put in the status also as the textual representation when asked
-    if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("statusText")) {
-      result.put("statusText", CrawlStatus.getName(Byte.parseByte(result.get("status").toString())));
+    // put in the status as the textual representation
+    if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("status")) {
+      result.put("status", CrawlStatus.getName(Byte.parseByte(result.get("status").toString())));
     }
 
     // url in its original key form
