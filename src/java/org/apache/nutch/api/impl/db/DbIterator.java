@@ -121,7 +121,7 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
 
     // put in the status also as the textual representation when asked
     if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("statusText")) {
-      result.put("statusText", CrawlStatus.getName((byte) result.get("status")));
+      result.put("statusText", CrawlStatus.getName(Byte.parseByte(result.get("status").toString())));
     }
 
     // url in its original key form
