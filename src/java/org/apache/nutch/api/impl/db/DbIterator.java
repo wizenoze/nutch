@@ -23,10 +23,12 @@ import java.util.Set;
 import org.apache.avro.util.Utf8;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.gora.query.Result;
+import org.apache.nutch.crawl.CrawlStatus;
 import org.apache.nutch.storage.Mark;
 import org.apache.nutch.storage.WebPage;
 import org.apache.nutch.util.NutchJob;
 import org.apache.nutch.util.TableUtil;
+import org.apache.nutch.webui.client.model.Crawl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +118,17 @@ public class DbIterator extends UnmodifiableIterator<Map<String, Object>> {
     if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("url")) {
       result.put("url", TableUtil.unreverseUrl(url));
     }
-    // url in its original form
-    result.put("key", url);
+
+    // put in the status also as the textual representation when asked
+    if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("statusText")) {
+      result.put("statusText", CrawlStatus.getName((byte) result.get("status")));
+    }
+
+    // url in its original key form
+    if (CollectionUtils.isEmpty(commonFields) || commonFields.contains("key")) {
+      result.put("key", url);
+    }
+
     return result;
   }
 
