@@ -16,7 +16,6 @@
  ******************************************************************************/
 package org.apache.nutch.api;
 
-import java.net.ConnectException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -263,7 +262,8 @@ public class NutchServer extends Application {
           startServer();
           break;
         } catch (IllegalStateException e) {
-            LOG.warn("Failed to start server on try: {}", tryIdx);
+          LOG.warn("Failed to start server on try: {}", tryIdx);
+          Thread.sleep(1000);
         }
       }
     }
@@ -287,7 +287,7 @@ public class NutchServer extends Application {
       clientResource.get();
 
     } catch (ResourceException e) {
-      LOG.warn("Connect connect to server, probably not running.", e);
+      LOG.warn("Cannot connect to server, probably not running.", e);
     }
   }
 
