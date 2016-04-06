@@ -76,6 +76,8 @@ public class NutchServer extends Application {
   private static final String CMD_LOG_LEVEL = "log";
   private static final String CMD_RESTART = "restart";
 
+  private static final int NUM_RETRIES = 5;
+
   private Component component;
   private ConfManager configManager;
   private JobManager jobMgr;
@@ -255,7 +257,15 @@ public class NutchServer extends Application {
     }
 
     if (start) {
-      startServer();
+      // retry a few times, since stopping is not instantaneous
+      for (int tryIdx = 1; tryIdx <= NUM_RETRIES; tryIdx++) {
+        try {
+          startServer();
+          break;
+        } catch (IllegalStateException e) {
+            LOG.warn("Failed to start server on try: {}", tryIdx);
+        }
+      }
     }
   }
 
