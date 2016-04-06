@@ -75,7 +75,7 @@ public class NutchServer extends Application {
   private static final String CMD_LOG_LEVEL = "log";
   private static final String CMD_RESTART = "restart";
 
-  private static final int NUM_RETRIES = 5;
+  private static final int NUM_RETRIES = 30;
 
   private Component component;
   private ConfManager configManager;
