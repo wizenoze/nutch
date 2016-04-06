@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.apache.nutch.api;
 
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -49,6 +50,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,9 +93,9 @@ public class NutchServer extends Application {
   public NutchServer() {
     configManager = new RAMConfManager();
     BlockingQueue<Runnable> runnables = Queues
-        .newArrayBlockingQueue(JOB_CAPACITY);
+            .newArrayBlockingQueue(JOB_CAPACITY);
     NutchServerPoolExecutor executor = new NutchServerPoolExecutor(10,
-        JOB_CAPACITY, 1, TimeUnit.HOURS, runnables);
+            JOB_CAPACITY, 1, TimeUnit.HOURS, runnables);
     jobMgr = new RAMJobManager(new JobFactory(), executor, configManager);
 
     // Create a new Component.
@@ -138,7 +140,7 @@ public class NutchServer extends Application {
 
   /**
    * Convenience method to determine whether a Nutch server is running.
-   * 
+   *
    * @return true if a server instance is running.
    */
   public boolean isRunning() {
@@ -147,11 +149,11 @@ public class NutchServer extends Application {
 
   /**
    * Starts the Nutch server printing some logging to the log file.
-   * 
+   *
    */
   public void start() {
     LOG.info("Starting NutchServer on port: {} with logging level: {} ...",
-        port, logLevel);
+            port, logLevel);
     try {
       component.start();
     } catch (Exception e) {
@@ -168,10 +170,10 @@ public class NutchServer extends Application {
    * {@link org.apache.nutch.api.NutchApp#jobManager} for a list of jobs with
    * {@link org.apache.nutch.api.model.response.JobInfo#state} equal to
    * 'RUNNING'.
-   * 
+   *
    * @param force
    *          ignore running tasks
-   * 
+   *
    * @return true if there are no jobs running or false if there are jobs with
    *         running state.
    */
@@ -186,7 +188,7 @@ public class NutchServer extends Application {
 
   /**
    * Stop the Nutch server.
-   * 
+   *
    * @param force
    *          boolean method to effectively kill jobs regardless of state.
    * @return true if no server is running or if the shutdown was successful.
@@ -263,15 +265,20 @@ public class NutchServer extends Application {
   }
 
   private static void stopRemoteServer(boolean force) {
-    Reference reference = new Reference(Protocol.HTTP, LOCALHOST, port);
-    reference.setPath("/admin/stop");
+    try {
+      Reference reference = new Reference(Protocol.HTTP, LOCALHOST, port);
+      reference.setPath("/admin/stop");
 
-    if (force) {
-      reference.addQueryParameter("force", "true");
+      if (force) {
+        reference.addQueryParameter("force", "true");
+      }
+
+      ClientResource clientResource = new ClientResource(reference);
+      clientResource.get();
+
+    } catch (ResourceException e) {
+      LOG.warn("Connect connect to server, probably not running.", e);
     }
-
-    ClientResource clientResource = new ClientResource(reference);
-    clientResource.get();
   }
 
   private static Options createOptions() {
@@ -279,13 +286,13 @@ public class NutchServer extends Application {
     OptionBuilder.hasArg();
     OptionBuilder.withArgName("logging level");
     OptionBuilder
-        .withDescription("Select a logging level for the NutchServer: \n"
-            + "ALL|CONFIG|FINER|FINEST|INFO|OFF|SEVERE|WARNING");
+            .withDescription("Select a logging level for the NutchServer: \n"
+                    + "ALL|CONFIG|FINER|FINEST|INFO|OFF|SEVERE|WARNING");
     options.addOption(OptionBuilder.create(CMD_LOG_LEVEL));
 
     OptionBuilder
-        .withDescription("Stop running NutchServer. "
-            + "true value forces the Server to stop despite running jobs e.g. kills the tasks ");
+            .withDescription("Stop running NutchServer. "
+                    + "true value forces the Server to stop despite running jobs e.g. kills the tasks ");
     OptionBuilder.hasOptionalArg();
     OptionBuilder.withArgName("force");
     options.addOption(OptionBuilder.create(CMD_STOP));
