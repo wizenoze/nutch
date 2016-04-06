@@ -72,6 +72,7 @@ public class NutchServer extends Application {
   private static final String CMD_STOP = "stop";
   private static final String CMD_PORT = "port";
   private static final String CMD_LOG_LEVEL = "log";
+  private static final String CMD_RESTART = "restart";
 
   private Component component;
   private ConfManager configManager;
@@ -231,14 +232,29 @@ public class NutchServer extends Application {
       port = Integer.parseInt(commandLine.getOptionValue(CMD_PORT));
     }
 
+    boolean start = true;
+    boolean stop = false;
+    String param = "";
+
     if (commandLine.hasOption(CMD_STOP)) {
-      String stopParameter = commandLine.getOptionValue(CMD_STOP);
-      boolean force = StringUtils.equals("force", stopParameter);
-      stopRemoteServer(force);
-      return;
+      param = commandLine.getOptionValue(CMD_STOP);
+      start = false;
+      stop = true;
     }
 
-    startServer();
+    if (commandLine.hasOption(CMD_RESTART)) {
+      param = commandLine.getOptionValue(CMD_RESTART);
+      stop = true;
+    }
+
+    if (stop) {
+      boolean force = StringUtils.equals("force", param);
+      stopRemoteServer(force);
+    }
+
+    if (start) {
+      startServer();
+    }
   }
 
   private static void startServer() {
@@ -273,6 +289,13 @@ public class NutchServer extends Application {
     OptionBuilder.hasOptionalArg();
     OptionBuilder.withArgName("force");
     options.addOption(OptionBuilder.create(CMD_STOP));
+
+    OptionBuilder
+            .withDescription("Re(start) running NutchServer. "
+                    + "true value forces the Server to stop despite running jobs e.g. kills the tasks ");
+    OptionBuilder.hasOptionalArg();
+    OptionBuilder.withArgName("force");
+    options.addOption(OptionBuilder.create(CMD_RESTART));
 
     OptionBuilder.withDescription("Show this help");
     options.addOption(OptionBuilder.create(CMD_HELP));
