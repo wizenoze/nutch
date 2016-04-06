@@ -58,11 +58,11 @@ public class AdminResource extends AbstractResource {
       return "Can't stop now. There are jobs running. Try force option.";
     }
 
-    scheduleServerStop();
+    scheduleServerStop(force);
     return MessageFormat.format("Stopping in {0} seconds.", DELAY_SEC);
   }
 
-  private void scheduleServerStop() {
+  private void scheduleServerStop(final boolean force) {
     LOG.info("Server shutdown scheduled in {} seconds", DELAY_SEC);
     Thread thread = new Thread() {
       public void run() {
@@ -71,7 +71,7 @@ public class AdminResource extends AbstractResource {
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
-        server.stop(false);
+        server.stop(force);
         LOG.info("Service stopped.");
       }
     };
