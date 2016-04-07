@@ -16,10 +16,12 @@
  ******************************************************************************/
 package org.apache.nutch.api;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 import javax.ws.rs.core.Application;
@@ -30,6 +32,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOExceptionWithCause;
 import org.apache.commons.lang.StringUtils;
 import org.apache.nutch.api.impl.JobFactory;
 import org.apache.nutch.api.impl.NutchServerPoolExecutor;
@@ -102,6 +105,11 @@ public class NutchServer extends Application {
     // Create a new Component.
     component = new Component();
     component.getLogger().setLevel(Level.parse(logLevel));
+    try {
+      component.getLogger().addHandler(new FileHandler("rest_api.log"));
+    } catch (IOException e) {
+      LOG.error("Cannot initialize REST API log file.");
+    }
 
     // Add a new HTTP server listening on defined port.
     component.getServers().add(Protocol.HTTP, port);
