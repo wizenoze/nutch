@@ -105,11 +105,6 @@ public class NutchServer extends Application {
     // Create a new Component.
     component = new Component();
     component.getLogger().setLevel(Level.parse(logLevel));
-    try {
-      component.getLogger().addHandler(new FileHandler("rest_api.log"));
-    } catch (IOException e) {
-      LOG.error("Cannot initialize REST API log file.");
-    }
 
     // Add a new HTTP server listening on defined port.
     component.getServers().add(Protocol.HTTP, port);
